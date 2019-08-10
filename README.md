@@ -14,6 +14,8 @@ $ go get github.com/markity/minio-progress
 
 ## 快速开始
 
+### 上传使用进度条
+
 main.go
 
 ```
@@ -77,7 +79,7 @@ func main() {
     fileSize := fileInfo.Size()
 
     // 创建进度条对象, 需要在参数中输入文件的大小
-    progressBar := progress.NewProgress(fileSize)
+    progressBar := progress.NewUploadProgress(fileSize)
 
     _, err = client.PutObject(bucketName, objectName, file, fileSize, minio.PutObjectOptions{ContentType: "application/octet-stream", Progress: progressBar})
     if err != nil {
@@ -93,4 +95,66 @@ big.rar  main.go
 $ go run ./main.go
 [====================] 1529094438 / 1529094438 100%
 2019/08/10 16:00:26 上传成功!
+```
+
+### 下载使用进度条
+
+main.go
+
+```
+package main
+
+import (
+	"log"
+	"os"
+
+	progress "github.com/markity/minio-test/minio-progress"
+	"github.com/minio/minio-go/v6"
+)
+
+// minio客户端基本信息
+var endpoint = "127.0.0.1:9000"
+var accessKeyID = "xuri"
+var secretAccessKey = "jx2004119"
+var secure = false
+
+// 数据桶信息
+var bucketName = "music"
+var location = "us-east-1"
+
+// 下载文件信息
+var objectName = "big.rar"
+var filePath = "./big.rar"
+
+func main() {
+    client, err := minio.New(endpoint, accessKeyID, secretAccessKey, secure)
+    if err != nil {
+        log.Fatalf("创建客户端失败:%v\n", err)
+    }
+
+    object, err := client.GetObject(bucketName, objectName, minio.GetObjectOptions{})
+    if err != nil {
+        log.Fatalf("下载文件失败:%v\n", err)
+    }
+
+    file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0666)
+    if err != nil {
+        log.Fatalf("打开文件失败:%v\n", err)
+    }
+    defer file.Close()
+
+    if _, err := progress.CopyWithProgress(file, object); err != nil {
+        log.Fatalf("下载文件失败:%v\n", err)
+    }
+
+    log.Printf("下载文件成功!\n")
+}
+```
+
+```
+$ ls
+main.go
+$ go run ./main.go
+[====================] 1529094438 / 1529094438 100%
+2019/08/10 17:43:00 下载文件成功
 ```
