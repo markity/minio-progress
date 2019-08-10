@@ -20,11 +20,11 @@ main.go
 package main
 
 import (
-	"log"
-	"os"
+    "log"
+    "os"
 
     // 导入进度条包
-	progress "github.com/markity/minio-progress"
+    progress "github.com/markity/minio-progress"
 
     // 导入minio SDK
     "github.com/minio/minio-go/v6"
