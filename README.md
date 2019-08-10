@@ -134,7 +134,7 @@ func main() {
 
     object, err := client.GetObject(bucketName, objectName, minio.GetObjectOptions{})
     if err != nil {
-        log.Fatalf("下载文件失败:%v\n", err)
+        log.Fatalf("获取文件失败:%v\n", err)
     }
 
     file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0666)
