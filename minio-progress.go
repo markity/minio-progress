@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/minio/minio-go"
+	minio "github.com/minio/minio-go"
 )
 
 // 拼接多字符字符串 mulitSign("=", 3) => "==="
@@ -17,12 +17,13 @@ func mulitSign(sign string, num int) string {
 	return res
 }
 
-// 打印进度条到标准输出 [==================  ] 94%
+// 打印进度条到标准输出 [==================  ] 30 / 35 85%
 func draw(current int64, total int64, percent int) {
 	num := percent / 5
 	fmt.Printf("\r[%v%v] %v / %v %v%%", mulitSign("=", num), mulitSign(" ", 20-num), current, total, percent)
 }
 
+// NewUploadProgress: Create a *UploadProgress object
 func NewUploadProgress(total int64) *UploadProgress {
 	return &UploadProgress{total: total, current: 0, percent: 0}
 }
@@ -49,6 +50,7 @@ func (progress *UploadProgress) Read(b []byte) (int, error) {
 	return int(n), nil
 }
 
+// CopyWithProgress: Copy the stream and print the progress bar
 func CopyWithProgress(dst io.Writer, object *minio.Object) (int64, error) {
 	var totalRead int64 = 0
 
