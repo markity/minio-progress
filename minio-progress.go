@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/minio/minio-go/v6"
+	"github.com/minio/minio-go"
 )
 
 // 拼接多字符字符串 mulitSign("=", 3) => "==="

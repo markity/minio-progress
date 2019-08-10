@@ -29,7 +29,7 @@ import (
     progress "github.com/markity/minio-progress"
 
     // 导入minio SDK
-    "github.com/minio/minio-go/v6"
+    "github.com/minio/minio-go"
 )
 
 // minio客户端基本信息
@@ -108,8 +108,8 @@ import (
 	"log"
 	"os"
 
-	progress "github.com/markity/minio-test/minio-progress"
-	"github.com/minio/minio-go/v6"
+	progress "github.com/markity/minio-progress"
+	"github.com/minio/minio-go"
 )
 
 // minio客户端基本信息
