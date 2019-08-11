@@ -52,42 +52,40 @@ func (progress *UploadProgress) Read(b []byte) (int, error) {
 
 // CopyWithProgress: Copy the stream and print the progress bar
 func CopyWithProgress(dst io.Writer, object *minio.Object) (int64, error) {
-	var totalRead int64 = 0
-
-	// 每次读32 * 1024个字节
-	size := 32 * 1024
-	data := make([]byte, size)
-
 	objInfo, err := object.Stat()
 	if err != nil {
-		return totalRead, err
+		return 0, err
 	}
 	objSize := objInfo.Size
 
+	var written int64 = 0
+	buf := make([]byte, 32*1024)
 	for {
 		// 读取
-		nRead, errRead := object.Read(data)
-		if errRead != nil && errRead != io.EOF {
-			// 未知异常,读取失败
-			return totalRead, errRead
+		nr, er := object.Read(buf)
+		if nr > 0 {
+			nw, ew := dst.Write(buf[0:nr])
+			if nw > 0 {
+				written += int64(nw)
+			}
+			percent := int(float64(written) * 100 / float64(objSize))
+			draw(written, objSize, percent)
+			if ew != nil {
+				err = ew
+				break
+			}
+			if nr != nw {
+				err = io.ErrShortWrite
+				break
+			}
 		}
-		data = data[:nRead]
-
-		// 写入
-		nWrite, errWrite := dst.Write(data)
-		totalRead += int64(nWrite)
-		if errWrite != nil {
-			// 写入失败
-			return totalRead, errWrite
+		if er != nil {
+			if er != io.EOF {
+				err = er
+			}
+			break
 		}
-
-		// 打印进度条
-		percent := int(float64(totalRead) * 100 / float64(objSize))
-		draw(totalRead, objSize, percent)
-
-		if errRead == io.EOF {
-			fmt.Printf("\n")
-			return totalRead, nil
-		}
+		fmt.Printf("\n")
 	}
+	return written, err
 }
