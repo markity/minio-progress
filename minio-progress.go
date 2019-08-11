@@ -85,7 +85,7 @@ func CopyWithProgress(dst io.Writer, object *minio.Object) (int64, error) {
 			}
 			break
 		}
-		fmt.Printf("\n")
 	}
+	fmt.Printf("\n")
 	return written, err
 }
