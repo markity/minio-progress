@@ -1,6 +1,6 @@
 # 为minio上传下载提供便捷的进度条接口
 
-使用minio-progress快速为minio上传下载添加进度条
+使用minio-progress快速为minio上传和下载添加进度条
 
 ```
 [===========         ] 856293376 / 1529094438 56%
@@ -15,6 +15,19 @@ $ go get github.com/markity/minio-progress
 ## 快速开始
 
 ### 上传使用进度条
+
+```
+// 创建上传进度条对象
+progressBar := progress.NewUploadProgress(fileSize)
+
+// 然后将进度条对象包含在minio.PutObjectOptions中的Progress配置即可
+n, err = client.PutObject(bucketName, objectName, file, fileSize, minio.PutObjectOptions{ContentType: "application/octet-stream", Progress: progressBar})
+if err != nil {
+    fmt.Printf("上传文件失败:%v\n", err)
+}
+```
+
+#### 完整案例
 
 main.go
 
@@ -98,6 +111,26 @@ $ go run ./main.go
 ```
 
 ### 下载使用进度条
+
+```
+// minio-go没有为下载接口提供查询进度功能, 所以只能在本地拷贝流时获取下载进度
+// 你可以使用progress.CopyWithProgress代替io.Copy来将对象下载到本地文件
+// 说明: progress.CopyWithProgress只是简单封装了io.Copy, 使之能打印下载进度
+
+// 首先获取对象
+object, err := client.GetObject(bucketName, objectName, minio.GetObjectOptions{})
+if err != nil {
+    log.Fatalf("获取文件失败:%v\n", err)
+}
+
+// 然后使用io.CopyWithProgress拷贝到文件即可
+n, err := progress.CopyWithProgress(file, object)
+if err != nil {
+    log.Fatalf("下载文件失败:%v\n", err)
+}
+```
+
+#### 完整案例
 
 main.go
 
