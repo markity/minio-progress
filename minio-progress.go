@@ -81,7 +81,6 @@ func CopyWithProgress(dst io.Writer, object *minio.Object) (int64, error) {
 			return totalRead, errWrite
 		}
 
-		object.Stat()
 		// 打印进度条
 		percent := int(float64(totalRead) * 100 / float64(objSize))
 		draw(totalRead, objSize, percent)
