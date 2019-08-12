@@ -147,8 +147,8 @@ import (
 
 // minio客户端基本信息
 var endpoint = "127.0.0.1:9000"
-var accessKeyID = "xuri"
-var secretAccessKey = "jx2004119"
+var accessKeyID = "Your-AccessKeyID"
+var secretAccessKey = "Your-SecretAccessKey"
 var secure = false
 
 // 数据桶信息
